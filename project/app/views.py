@@ -36,3 +36,24 @@ def fun3(req):
             return JsonResponse(s.data)
         else:
             return JsonResponse(s.errors)
+
+@csrf_exempt
+def fun4(req,d):
+    try:
+        demo=student.objects.get(pk=d)
+    except student.DoesNotExist:
+        return HttpResponse('invalid')
+    if req.method=='GET':
+        s=model_serializers(demo)
+        return JsonResponse(s.data)
+    elif req.method=='PUT':
+        d=JSONParser().parse(req)
+        s=model_serializers(demo, data=d)
+        if s.is_valid():
+            s.save()
+            return JsonResponse(s.data)
+        else:
+            return JsonResponse(s.errors)
+    elif req.method--'DELETE':
+        demo.delete()
+        return HttpResponse('deleted')
