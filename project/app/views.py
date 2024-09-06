@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics,mixins
 # Create your views here.
 
 def dictionary(req):
@@ -135,3 +136,23 @@ class fun8(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except student.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)        
+        
+
+class genericapiview(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin):
+    serializer_class=model_serializers
+    queryset=student.objects.all()
+    def get(self,req):
+        return self.list(req)
+    def post(self,req):
+        return self.create(req)
+    
+class update(generics.GenericAPIView,mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+    serializer_class=model_serializers
+    queryset=student.objects.all()
+    lookup_field='id'
+    def get(self,req,id=None):
+        return self.retrieve(req)
+    def put(self,req,id=None):
+        return self.update(req,id)
+    def delete(self,req,id):
+        return self.destroy(req,id)
